@@ -1,5 +1,12 @@
+// Load environment variables from root .env
+import dotenv from 'dotenv';
+import path from 'path';
+
+const rootEnvPath = path.resolve(__dirname, '../../../.env');
+dotenv.config({ path: rootEnvPath });
+
 import express from 'express';
-import Logger from '@ecommerce/common';
+import { Logger } from '@ecommerce/common';
 
 const app = express();
 const logger = new Logger('product-service');

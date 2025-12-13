@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston from "winston";
 
 export interface LoggerContext {
   correlationId?: string;
@@ -10,9 +10,9 @@ export interface LoggerContext {
 class Logger {
   private logger: winston.Logger;
 
-  constructor(serviceName: string = 'unknown') {
+  constructor(serviceName: string = "unknown") {
     this.logger = winston.createLogger({
-      level: process.env.LOG_LEVEL || 'info',
+      level: process.env.LOG_LEVEL || "info",
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.errors({ stack: true }),
@@ -24,7 +24,9 @@ class Logger {
           format: winston.format.combine(
             winston.format.colorize(),
             winston.format.printf(({ timestamp, level, message, ...meta }) => {
-              const metaStr = Object.keys(meta).length ? JSON.stringify(meta, null, 2) : '';
+              const metaStr = Object.keys(meta).length
+                ? JSON.stringify(meta, null, 2)
+                : "";
               return `${timestamp} [${level}]: ${message} ${metaStr}`;
             })
           ),
@@ -40,11 +42,14 @@ class Logger {
   error(message: string, error?: Error | any, context?: LoggerContext) {
     this.logger.error(message, {
       ...context,
-      error: error instanceof Error ? {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      } : error,
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack,
+              name: error.name,
+            }
+          : error,
     });
   }
 
@@ -64,4 +69,3 @@ class Logger {
 }
 
 export default Logger;
-

@@ -1,21 +1,24 @@
-import { z } from 'zod';
-import { ValidationError } from '../errors';
+import { z } from "zod";
+import { ValidationError } from "../errors";
 
 export function validate<T>(schema: z.ZodSchema<T>, data: unknown): T {
   try {
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error.errors);
+      throw new ValidationError("Validation failed", error.errors);
     }
     throw error;
   }
 }
 
-export function validateAsync<T>(schema: z.ZodSchema<T>, data: unknown): Promise<T> {
+export function validateAsync<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown
+): Promise<T> {
   return schema.parseAsync(data).catch((error) => {
     if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error.errors);
+      throw new ValidationError("Validation failed", error.errors);
     }
     throw error;
   });
@@ -29,4 +32,3 @@ export const commonSchemas = {
     limit: z.coerce.number().int().positive().max(100).default(10),
   }),
 };
-

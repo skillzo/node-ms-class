@@ -1,5 +1,5 @@
-import amqplib, { Connection, Channel } from 'amqplib';
-import { EventPayload } from '@ecommerce/types';
+import amqplib, { Channel, ChannelModel } from "amqplib";
+import { EventPayload } from "@ecommerce/types";
 
 export interface EventBusConfig {
   url: string;
@@ -7,21 +7,23 @@ export interface EventBusConfig {
 }
 
 export class EventBus {
-  private connection: Connection | null = null;
+  private connection: ChannelModel | null = null;
   private channel: Channel | null = null;
   private config: EventBusConfig;
   private exchange: string;
 
   constructor(config: EventBusConfig) {
     this.config = config;
-    this.exchange = config.exchange || 'ecommerce.events';
+    this.exchange = config.exchange || "ecommerce.events";
   }
 
   async connect(): Promise<void> {
     try {
       this.connection = await amqplib.connect(this.config.url);
       this.channel = await this.connection.createChannel();
-      await this.channel.assertExchange(this.exchange, 'topic', { durable: true });
+      await this.channel.assertExchange(this.exchange, "topic", {
+        durable: true,
+      });
     } catch (error) {
       throw new Error(`Failed to connect to message broker: ${error}`);
     }
@@ -38,9 +40,14 @@ export class EventBus {
     }
   }
 
-  async publish(eventType: string, data: any, correlationId?: string, source?: string): Promise<void> {
+  async publish(
+    eventType: string,
+    data: any,
+    correlationId?: string,
+    source?: string
+  ): Promise<void> {
     if (!this.channel) {
-      throw new Error('EventBus not connected');
+      throw new Error("EventBus not connected");
     }
 
     const payload: EventPayload = {
@@ -48,11 +55,13 @@ export class EventBus {
       data,
       timestamp: new Date().toISOString(),
       correlationId: correlationId || this.generateCorrelationId(),
-      source: source || 'unknown',
+      source: source || "unknown",
     };
 
     const message = Buffer.from(JSON.stringify(payload));
-    this.channel.publish(this.exchange, eventType, message, { persistent: true });
+    this.channel.publish(this.exchange, eventType, message, {
+      persistent: true,
+    });
   }
 
   async subscribe(
@@ -61,14 +70,14 @@ export class EventBus {
     queueName?: string
   ): Promise<void> {
     if (!this.channel) {
-      throw new Error('EventBus not connected');
+      throw new Error("EventBus not connected");
     }
 
     const queue = queueName || `queue.${eventType}`;
     await this.channel.assertQueue(queue, { durable: true });
     await this.channel.bindQueue(queue, this.exchange, eventType);
 
-    await this.channel.consume(queue, async (msg) => {
+    await this.channel.consume(queue, async (msg: any) => {
       if (msg) {
         try {
           const payload: EventPayload = JSON.parse(msg.content.toString());
@@ -86,4 +95,3 @@ export class EventBus {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 }
-
