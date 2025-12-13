@@ -1,0 +1,99 @@
+// Shared TypeScript types across all services
+
+export interface ServiceResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+}
+
+export interface PaginationParams {
+  page: number;
+  limit: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface EventPayload {
+  eventType: string;
+  data: any;
+  timestamp: string;
+  correlationId: string;
+  source: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  role: "customer" | "admin";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  images: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
+  totalAmount: number;
+  items: OrderItem[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+}
+
+export interface Payment {
+  id: string;
+  orderId: string;
+  amount: number;
+  status: "pending" | "completed" | "failed" | "refunded";
+  paymentMethod: string;
+  transactionId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: "email" | "sms" | "in-app";
+  title: string;
+  message: string;
+  read: boolean;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+}
