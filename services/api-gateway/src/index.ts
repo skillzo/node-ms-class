@@ -10,6 +10,8 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { Logger } from "@ecommerce/common";
+import { services } from "./config/services";
+import { createServiceProxy } from "./middleware/proxy.middleware";
 
 const app = express();
 const logger = new Logger("api-gateway");
@@ -58,13 +60,33 @@ app.get("/health", (_req, res) => {
   });
 });
 
-// Routes will be added here
+// API Gateway info endpoint
 app.get("/api", (_req, res) => {
   res.json({
     message: "E-Commerce Microservices API Gateway",
     version: "1.0.0",
+    services: Object.values(services).map((s) => ({
+      name: s.name,
+      path: s.path,
+    })),
   });
 });
+
+// Service proxy routes
+// User Service
+app.use(services.user.path, createServiceProxy(services.user));
+
+// Product Service
+app.use(services.product.path, createServiceProxy(services.product));
+
+// Order Service
+app.use(services.order.path, createServiceProxy(services.order));
+
+// Payment Service
+app.use(services.payment.path, createServiceProxy(services.payment));
+
+// Notification Service
+app.use(services.notification.path, createServiceProxy(services.notification));
 
 // 404 handler
 app.use((_req, res) => {

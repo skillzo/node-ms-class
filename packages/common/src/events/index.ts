@@ -1,4 +1,4 @@
-import amqplib, { Channel, ChannelModel } from "amqplib";
+import amqplib, { ChannelModel, Channel } from "amqplib";
 import { EventPayload } from "@ecommerce/types";
 
 export interface EventBusConfig {
@@ -77,7 +77,7 @@ export class EventBus {
     await this.channel.assertQueue(queue, { durable: true });
     await this.channel.bindQueue(queue, this.exchange, eventType);
 
-    await this.channel.consume(queue, async (msg: any) => {
+    await this.channel.consume(queue, async (msg) => {
       if (msg) {
         try {
           const payload: EventPayload = JSON.parse(msg.content.toString());

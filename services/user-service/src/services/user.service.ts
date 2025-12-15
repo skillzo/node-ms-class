@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User, UserProfile } from "@prisma/client";
 import bcrypt from "bcrypt";
 import {
   ConflictError,
@@ -51,16 +51,13 @@ export class UserService {
     });
 
     // Remove password hash from response
-    const { passwordHash: _, ...userWithoutPassword } = user;
-
     return {
-      user: userWithoutPassword,
+      user: this.mapUserToResponse(user),
       token,
     };
   }
 
   async login(email: string, password: string) {
-    // Find user
     const user = await prisma.user.findUnique({
       where: { email },
       include: {
@@ -86,11 +83,10 @@ export class UserService {
       role: user.role,
     });
 
-    // Remove password hash from response
-    const { passwordHash: _, ...userWithoutPassword } = user;
+    const userResponse = this.mapUserToResponse(user);
 
     return {
-      user: userWithoutPassword,
+      user: this.mapUserToResponse(user),
       token,
     };
   }
@@ -103,14 +99,13 @@ export class UserService {
       },
     });
 
+    console.log("userResponse", user);
+
     if (!user) {
       throw new NotFoundError("User");
     }
 
-    // Remove password hash from response
-    const { passwordHash: _, ...userWithoutPassword } = user;
-
-    return userWithoutPassword;
+    return this.mapUserToResponse(user);
   }
 
   async updateProfile(userId: string, data: UpdateProfileDto) {
@@ -151,5 +146,13 @@ export class UserService {
     } catch (error) {
       return { valid: false, error: "Invalid token" };
     }
+  }
+
+  private mapUserToResponse(user: User) {
+    const { passwordHash: _, updatedAt: _2, ...userWithoutPassword } = user;
+
+    return {
+      ...userWithoutPassword,
+    };
   }
 }

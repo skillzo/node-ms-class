@@ -33,10 +33,21 @@ export interface EventPayload {
   source: string;
 }
 
+export interface UserProfile {
+  id: string;
+  userId: string;
+  name: string | null;
+  address: string | null;
+  phone: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface User {
   id: string;
   email: string;
   role: "customer" | "admin";
+  profile?: UserProfile | null;
   createdAt: Date;
   updatedAt: Date;
 }
