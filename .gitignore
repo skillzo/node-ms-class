@@ -43,6 +43,6 @@ coverage/
 # Docker
 .dockerignore
 
-*.md
+# *.md
 .cursor/
 .cursorrules
