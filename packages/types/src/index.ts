@@ -1,5 +1,7 @@
 // Shared TypeScript types across all services
 
+export * from "./events";
+
 export interface ServiceResponse<T = any> {
   success: boolean;
   data?: T;
@@ -25,8 +27,10 @@ export interface PaginatedResponse<T> {
   };
 }
 
+import type { EventName } from "./events";
+
 export interface EventPayload {
-  eventType: string;
+  eventType: EventName;
   data: any;
   timestamp: string;
   correlationId: string;

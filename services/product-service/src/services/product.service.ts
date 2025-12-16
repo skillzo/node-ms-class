@@ -1,6 +1,7 @@
 import { prisma } from "../config/database";
 import { NotFoundError, ConflictError } from "@ecommerce/common";
 import { EventBus } from "@ecommerce/common";
+import { EventName, Events } from "@ecommerce/types";
 import {
   CreateProductDto,
   UpdateProductDto,
@@ -17,7 +18,7 @@ export class ProductService {
   }
 
   private async publishEvent(
-    eventType: string,
+    eventType: EventName,
     data: any,
     correlationId?: string
   ) {
@@ -41,7 +42,7 @@ export class ProductService {
     });
 
     await this.publishEvent(
-      "product.created",
+      Events.PRODUCT.CREATED,
       { productId: product.id, ...data },
       correlationId
     );
@@ -118,7 +119,7 @@ export class ProductService {
     });
 
     await this.publishEvent(
-      "product.updated",
+      Events.PRODUCT.UPDATED,
       { productId, ...data },
       correlationId
     );
@@ -132,7 +133,11 @@ export class ProductService {
         where: { id: productId },
       });
 
-      await this.publishEvent("product.deleted", { productId }, correlationId);
+      await this.publishEvent(
+        Events.PRODUCT.DELETED,
+        { productId },
+        correlationId
+      );
 
       return product;
     } catch (error) {
@@ -179,8 +184,8 @@ export class ProductService {
     if (stockChanged) {
       const eventType =
         newStock < oldStock
-          ? "product.stock.decreased"
-          : "product.stock.increased";
+          ? Events.PRODUCT.STOCK_DECREASED
+          : Events.PRODUCT.STOCK_INCREASED;
       await this.publishEvent(
         eventType,
         {

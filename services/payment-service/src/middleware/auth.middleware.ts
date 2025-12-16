@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthUtils } from "@ecommerce/common";
 
-export const authenticate = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     const apiKey = req.headers["x-api-key"] as string;
@@ -47,3 +43,5 @@ export const requireRole = (allowedRoles: string[]) => {
     }
   };
 };
+
+

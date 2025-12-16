@@ -1,5 +1,5 @@
 import amqplib, { ChannelModel, Channel } from "amqplib";
-import { EventPayload } from "@ecommerce/types";
+import { EventPayload, EventName } from "@ecommerce/types";
 
 export interface EventBusConfig {
   url: string;
@@ -41,7 +41,7 @@ export class EventBus {
   }
 
   async publish(
-    eventType: string,
+    eventType: EventName,
     data: any,
     correlationId?: string,
     source?: string
@@ -65,7 +65,7 @@ export class EventBus {
   }
 
   async subscribe(
-    eventType: string,
+    eventType: EventName,
     handler: (payload: EventPayload) => Promise<void>,
     queueName?: string
   ): Promise<void> {

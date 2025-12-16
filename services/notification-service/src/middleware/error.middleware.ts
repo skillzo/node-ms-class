@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "@ecommerce/common";
 import { Logger } from "@ecommerce/common";
 
-const logger = new Logger("product-service");
+const logger = new Logger("notification-service");
 
 export const errorHandler = (
   err: Error | AppError,
@@ -40,3 +40,5 @@ export const errorHandler = (
     },
   });
 };
+
+
